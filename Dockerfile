@@ -17,23 +17,24 @@ COPY . .
 RUN go build -tags timetzdata -ldflags '-s -w' -o /out/CSO2-Server-bin .
 
 # exe 在 /app，资源必须在 /app/CSO2-Server/{assert,locales,database,configure}
-RUN mkdir -p /out/CSO2-Server/database \
-             /out/CSO2-Server/configure \
-    && cp -r ./assert ./locales /out/CSO2-Server/ \
-    && cp ./configure/server.conf /out/CSO2-Server/configure/
+RUN mkdir -p /out/CSO2-Server/database && \
+    mkdir -p /out/CSO2-Server/configure && \
+    cp -r ./assert ./locales /out/CSO2-Server/ && \
+    cp ./configure/server.conf /out/CSO2-Server/configure/
 
 FROM alpine:latest
 
-EXPOSE 1314/tcp 1315/tcp 30001/tcp 30002/udp
+ENV TZ=Asia/Shanghai
 
-RUN addgroup -g 1000 gamesrv \
-    && adduser -u 1000 -D -G gamesrv -s /bin/sh gamesrv \
-    && mkdir -p /app \
-    && chown -R 1000:1000 /app
+RUN addgroup -g 1000 gamesrv && \
+    adduser -u 1000 -D -G gamesrv -s /bin/sh gamesrv && \
+    mkdir -p /app && \
+    chown -R 1000:1000 /app
 
 COPY --from=builder --chown=1000:1000 /out /app
 
-# 玩家数据持久化（json 存档目录），运行时可挂载到宿主机
+EXPOSE 1314/tcp 1315/tcp 30001/tcp 30002/udp
+
 VOLUME ["/app/CSO2-Server/database"]
 
 USER 1000:1000
