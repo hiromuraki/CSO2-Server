@@ -29,6 +29,14 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
+            # 登录到阿里云 ACR
+            - name: Log in to ACR
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ secrets.ALIYUN_REGISTRY }}
+                  username: ${{ secrets.ALIYUN_REGISTRY_USER }}
+                  password: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
+
             # 获取当前日期 (yyyy-MM-dd) 并强制用户名小写
             - name: Prepare Image Tags
               id: prep
@@ -44,9 +52,12 @@ jobs:
                   # 调整上下文目录
                   context: .
                   push: true
+                  provenance: false
                   # 同时打上 latest 和 日期 tag
                   tags: |
-                      ghcr.io/${{ steps.prep.outputs.owner }}/cso2-server:${{ steps.prep.outputs.date }}
-                      ghcr.io/${{ steps.prep.outputs.owner }}/cso2-server:latest
+                      ghcr.io/${{ steps.prep.outputs.owner }}/cso2:${{ steps.prep.outputs.date }}
+                      ghcr.io/${{ steps.prep.outputs.owner }}/cso2:latest
+                      ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_REGISTRY_NAMESPACE }}/cso2:${{ steps.prep.outputs.date }}
+                      ${{ secrets.ALIYUN_REGISTRY }}/${{ secrets.ALIYUN_REGISTRY_NAMESPACE }}/cso2:latest
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
