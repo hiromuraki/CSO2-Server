@@ -17,10 +17,9 @@ COPY . .
 RUN go build -tags timetzdata -ldflags '-s -w' -o /out/CSO2-Server-bin .
 
 # exe 在 /app，资源必须在 /app/CSO2-Server/{assert,locales,database,configure}
-RUN mkdir -p /out/CSO2-Server/database/json \
-             /out/CSO2-Server/database/report \
+RUN mkdir -p /out/CSO2-Server/database \
              /out/CSO2-Server/configure \
-    && cp -r ./assert ./locales ./database/sql /out/CSO2-Server/ \
+    && cp -r ./assert ./locales /out/CSO2-Server/ \
     && cp ./configure/server.conf /out/CSO2-Server/configure/
 
 FROM alpine:latest
