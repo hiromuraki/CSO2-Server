@@ -1,3 +1,6 @@
+# ===================
+# 编译
+# ===================
 FROM golang:1.26-alpine AS builder
 
 ENV GO111MODULE=on \
@@ -22,14 +25,16 @@ RUN mkdir -p /out/CSO2-Server/database && \
     cp -r ./assert ./locales /out/CSO2-Server/ && \
     cp ./configure/server.conf /out/CSO2-Server/configure/
 
+# ===================
+# 主镜像
+# ===================
 FROM alpine:latest
 
 ENV TZ=Asia/Shanghai
 
 RUN addgroup -g 1000 gamesrv && \
-    adduser -u 1000 -D -G gamesrv -s /bin/sh gamesrv && \
-    mkdir -p /app && \
-    chown -R 1000:1000 /app
+    adduser -u 1000 -D -G gamesrv -s /bin/sh gamesrv
+RUN mkdir -p /app && chown 1000:1000 /app
 
 COPY --from=builder --chown=1000:1000 /out /app
 
@@ -37,6 +42,6 @@ EXPOSE 1314/tcp 1315/tcp 30001/tcp 30002/udp
 
 VOLUME ["/app/CSO2-Server/database"]
 
-USER 1000:1000
 WORKDIR /app
+USER 1000:1000
 CMD ["/app/CSO2-Server-bin"]
