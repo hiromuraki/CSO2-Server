@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go list *)",
+      "Bash(go get *)",
+      "Bash(go mod *)",
+      "Bash(go build *)",
+      "Bash(ldd /tmp/cso2-purego)",
+      "Bash(go test *)",
+      "Bash(git -C /home/user/downloads/CSO2-Server remote -v)",
+      "Bash(git -C /home/user/downloads/CSO2-Server status -s)",
+      "Bash(git -C /home/user/downloads/CSO2-Server branch -a)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(git -C /home/user/downloads/CSO2-Server log --oneline -3)",
+      "Bash(git -C /home/user/downloads/CSO2-Server log --oneline origin/master -1)",
+      "Bash(git -C /home/user/downloads/CSO2-Server log --oneline -1 --not origin/master)"
+    ]
+  }
+}

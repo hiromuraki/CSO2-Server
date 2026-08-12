@@ -1,49 +1,42 @@
-#镜像
-FROM ubuntu:18.04
-#安装工具
-RUN apt-get update -y -q && apt-get upgrade -y -q \
-    && apt-get install gcc -y -q  \
-    && gcc --version    \
-    && apt-get install wget -y -q 
-#安装go,清理go文件
-RUN wget https://studygolang.com/dl/golang/go1.15.4.linux-amd64.tar.gz \
-    && tar xfz go1.15.4.linux-amd64.tar.gz -C /usr/local    \
-    && rm -f go1.15.4.linux-amd64.tar.gz
-#设置环境变量
-ENV PATH $PATH:/usr/local/go/bin
-ENV GO111MODULE on
-ENV GOPROXY=https://goproxy.cn,direct
-RUN go version
-#设置工作目录
-WORKDIR $GOPATH/src/github.com/KouKouChan/CSO2-Server
-#下载mod
-COPY go.mod .
-COPY go.sum .
+FROM golang:1.26-alpine AS builder
+
+ENV GO111MODULE=on \
+    GOPROXY=https://goproxy.cn,direct \
+    CGO_ENABLED=0
+
+WORKDIR /build
+
+# 先拷贝依赖清单，利用 Docker 层缓存
+COPY go.mod go.sum ./
 RUN go mod download
-#复制项目文件
+
 COPY . .
-#清理项目git
-RUN rm -rf ./.git
-#构建项目
-RUN GOOS=linux GOARCH=amd64 go build -o CSO2-Server-docker .
-#设置工作目录
-WORKDIR $GOPATH/src/github.com/KouKouChan/
-#切换可执行文件位置
-RUN mv ./CSO2-Server/CSO2-Server-docker /usr/local/CSO2-Server-docker
-RUN mv ./CSO2-Server /usr/local/CSO2-Server
-#设置工作目录
-WORKDIR /usr/local/
-#清理项目
-RUN rm -rf /usr/local/go
-RUN rm -rf /root/go
-RUN rm -rf /root/.cache
-RUN apt-get remove gcc -q -y
-RUN apt-get remove wget -q -y
-#暴露端口
-EXPOSE 1314
-EXPOSE 1315
-EXPOSE 30001
-EXPOSE 30002
-#最终运行docker的命令
-#USER app-runner
-ENTRYPOINT  ["./CSO2-Server-docker"]
+
+# -tags timetzdata：嵌入时区数据库（alpine 无 /usr/share/zoneinfo）
+# -ldflags '-s -w'：去掉符号表，减小体积
+RUN go build -tags timetzdata -ldflags '-s -w' -o /out/CSO2-Server-bin .
+
+# exe 在 /app，资源必须在 /app/CSO2-Server/{assert,locales,database,configure}
+RUN mkdir -p /out/CSO2-Server/database/json \
+             /out/CSO2-Server/database/report \
+             /out/CSO2-Server/configure \
+    && cp -r ./assert ./locales ./database/sql /out/CSO2-Server/ \
+    && cp ./configure/server.conf /out/CSO2-Server/configure/
+
+FROM alpine:latest
+
+EXPOSE 1314/tcp 1315/tcp 30001/tcp 30002/udp
+
+RUN addgroup -g 1000 gamesrv \
+    && adduser -u 1000 -D -G gamesrv -s /bin/sh gamesrv \
+    && mkdir -p /app \
+    && chown -R 1000:1000 /app
+
+COPY --from=builder --chown=1000:1000 /out /app
+
+# 玩家数据持久化（json 存档目录），运行时可挂载到宿主机
+VOLUME ["/app/CSO2-Server/database"]
+
+USER 1000:1000
+WORKDIR /app
+CMD ["/app/CSO2-Server-bin"]

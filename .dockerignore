@@ -1,0 +1,31 @@
+# 版本控制
+.git
+.gitignore
+
+# Claude
+.claude
+
+# IDE 配置
+.idea
+*.iml
+misc.xml
+modules.xml
+workspace.xml
+dataSources.xml
+
+# 文档与 CI（镜像不需要）
+*.md
+photos
+appveyor.yml
+local-console.bat
+
+# 构建相关
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# 运行期数据（绝不可进镜像）
+database/json
+database/report
+database/*.db
+*.log
