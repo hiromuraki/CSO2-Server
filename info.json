@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "key": "counter-strike-online-2",
-    "name": "CSO2 Server",
+    "name": "Counter-Strike: Online 2",
     "registries": {
         "ghcr": "ghcr.io/hm-gamesrv/",
         "aliyun": "crpi-i9e7zrpnu4792a5m.cn-chengdu.personal.cr.aliyuncs.com/hiromuraki/"
@@ -53,7 +53,7 @@
             "key": "latest",
             "name": "最新构建版",
             "tag": "latest",
-            "container": "counter-strike-online-2"
+            "container": "counter-strike-online-2-server"
         }
     ]
 }
