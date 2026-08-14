@@ -1,0 +1,59 @@
+{
+    "schemaVersion": 1,
+    "key": "counter-strike-online-2",
+    "name": "CSO2 Server",
+    "registries": {
+        "ghcr": "ghcr.io/hm-gamesrv/",
+        "aliyun": "crpi-i9e7zrpnu4792a5m.cn-chengdu.personal.cr.aliyuncs.com/hiromuraki/"
+    },
+    "resources": {
+        "ports": [
+            {
+                "host": "1314",
+                "container": "1314",
+                "proto": "tcp",
+                "required": true,
+                "desc": "Web 注册页面"
+            },
+            {
+                "host": "1315",
+                "container": "1315",
+                "proto": "tcp",
+                "required": true,
+                "desc": "GM 控制台"
+            },
+            {
+                "host": "30001",
+                "container": "30001",
+                "proto": "tcp",
+                "required": true,
+                "desc": "游戏主连接"
+            },
+            {
+                "host": "30002",
+                "container": "30002",
+                "proto": "udp",
+                "required": true,
+                "desc": "联机通信"
+            }
+        ],
+        "volumes": [
+            {
+                "host": "./database",
+                "container": "/app/CSO2-Server/database",
+                "required": true,
+                "desc": "玩家数据"
+            }
+        ],
+        "env": [],
+        "extraArgs": ""
+    },
+    "variants": [
+        {
+            "key": "latest",
+            "name": "最新构建版",
+            "tag": "latest",
+            "container": "counter-strike-online-2"
+        }
+    ]
+}
