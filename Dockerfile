@@ -28,7 +28,7 @@ RUN mkdir -p /out/CSO2-Server/database && \
 # ===================
 # 主镜像
 # ===================
-FROM alpine:latest
+FROM alpine:3
 
 ENV TZ=Asia/Shanghai
 
