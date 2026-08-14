@@ -39,7 +39,7 @@
         ],
         "volumes": [
             {
-                "host": "./database",
+                "host": "./counter-strike-online-2-database",
                 "container": "/app/CSO2-Server/database",
                 "required": true,
                 "desc": "玩家数据"
