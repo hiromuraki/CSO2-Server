@@ -20,10 +20,10 @@ COPY . .
 RUN go build -tags timetzdata -ldflags '-s -w' -o /out/CSO2-Server-bin .
 
 # exe 在 /app，资源必须在 /app/CSO2-Server/{assert,locales,database,configure}
-RUN mkdir -p /out/CSO2-Server/database && \
-    mkdir -p /out/CSO2-Server/configure && \
-    cp -r ./assert ./locales /out/CSO2-Server/ && \
-    cp ./configure/server.conf /out/CSO2-Server/configure/
+RUN mkdir -p /out/CSO2-Server/database \
+    && mkdir -p /out/CSO2-Server/configure \
+    && cp -r ./assert ./locales /out/CSO2-Server/ \
+    && cp ./configure/server.conf /out/CSO2-Server/configure/
 
 # ===================
 # 主镜像
@@ -32,8 +32,8 @@ FROM alpine:3
 
 ENV TZ=Asia/Shanghai
 
-RUN addgroup -g 1000 gamesrv && \
-    adduser -u 1000 -D -G gamesrv -s /bin/sh gamesrv
+RUN addgroup -g 1000 gamesrv \
+    && adduser -u 1000 -D -G gamesrv -s /bin/sh gamesrv
 RUN mkdir -p /app && chown 1000:1000 /app
 
 COPY --from=builder --chown=1000:1000 /out /app
